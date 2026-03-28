@@ -92,12 +92,12 @@ const Render = (() => {
 
   function rules() {
     const el = document.getElementById('rules-geek-grid');
-    el.innerHTML = Object.entries(DATA.GEEK_META).map(([,m],i)=>`
+    el.innerHTML = Object.entries(DATA.GEEK_META).map(([k, m], i) => `
       <div class="geek-rule-item">
-        <div class="gri-num">#${i+1}</div>
+        <div class="gri-num">#${i + 1}</div>
         <div class="gri-name">${m.name}</div>
         <div class="gri-desc">${m.desc}</div>
-        <div class="gri-pts">+2 pts · detected from PGN</div>
+        <div class="gri-pts">+2 pts &nbsp;·&nbsp; ${m.type === 'player' ? 'player name' : m.type === 'round' ? 'round 1–14' : 'yes / no'}</div>
       </div>`).join('');
   }
 
