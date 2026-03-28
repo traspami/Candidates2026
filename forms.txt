@@ -1,0 +1,49 @@
+CANDIDATES 2026 — BETTING POOL PICKS
+Fill in your answers and send back.
+
+YOUR NAME: _______________
+
+OPEN SECTION PODIUM (Caruana / Nakamura / Giri / Praggnanandhaa / Wei Yi / Sindarov / Esipenko / Bluebaum)
+1st place (25 pts): _______________
+2nd place (15 pts): _______________
+3rd place (10 pts): _______________
+5 pts consolation if your pick makes the podium in a different position
+
+WOMEN'S SECTION PODIUM (Goryachkina / Zhu Jiner / Tan Zhongyi / Lagno / Vaishali / Divya / Assaubayeva / Muzychuk)
+1st place (10 pts): _______________
+2nd place (6 pts): _______________
+3rd place (4 pts): _______________
+2 pts consolation if your pick makes the podium in a different position
+
+GEEK MARKERS (2 pts each, 30 pts total)
+
+Hot Hand — which player will have the longest consecutive win streak?
+Answer (player name): _______________
+On Tilt — which player will have the longest consecutive loss streak?
+Answer (player name): _______________
+The Pacifist — which player will have the most draws? (Giri is ineligible)
+Answer (player name): _______________
+Philidor Sighting — will the Philidor Defence be played at any point?
+Answer (Yes / No): _______________
+First En Passant — in which round (1 to 14) will the first en passant capture happen?
+Answer (number 1–14): _______________
+Disrespect Move — will any pawn promote to a knight, bishop, or rook instead of a queen?
+Answer (Yes / No): _______________
+King's Excursion — will any king cross to the opponent's half of the board before move 40?
+Answer (Yes / No): _______________
+Castling Holdout — which player will castle at the latest move number across all their games?
+Answer (player name): _______________
+Second Queen — will any player have two queens of their colour on the board at the same time?
+Answer (Yes / No): _______________
+Actual Checkmate — will any game end with a checkmate on the board rather than a resignation?
+Answer (Yes / No): _______________
+Blitz Game — will any game end decisively in fewer than 25 moves?
+Answer (Yes / No): _______________
+The Marathon — will any game last more than 90 moves and end decisively?
+Answer (Yes / No): _______________
+Pawn Race — will both sides promote a pawn in the same game?
+Answer (Yes / No): _______________
+Closed Sicilian — will the Closed Sicilian be played at any point?
+Answer (Yes / No): _______________
+Late Shake-up — will the tournament leader change after round 12 concludes?
+Answer (Yes / No): _______________

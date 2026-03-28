@@ -4,7 +4,7 @@
    ================================================================ */
 const Lichess = (() => {
   const BASE = 'https://lichess.org';
-  const { OPEN_TOUR_ID, WOMENS_TOUR_ID, OPEN_R1_ID } = DATA.LICHESS;
+  const { OPEN_TOUR_ID, WOMENS_TOUR_ID, OPEN_R1_ID, WOMENS_R1_ID } = DATA.LICHESS;
 
   /* Discover round IDs for a tournament */
   async function discoverRounds(tourId) {
@@ -58,8 +58,8 @@ const Lichess = (() => {
       return games;
     };
 
-    result.open   = await fetchSection(OPEN_TOUR_ID,   OPEN_R1_ID, 'Open');
-    result.womens = await fetchSection(WOMENS_TOUR_ID, null,        "Women's");
+    result.open   = await fetchSection(OPEN_TOUR_ID,   OPEN_R1_ID,   'Open');
+    result.womens = await fetchSection(WOMENS_TOUR_ID, WOMENS_R1_ID, "Women's");
     result.round  = Analyser.currentRound([...result.open, ...result.womens]);
     return result;
   }
