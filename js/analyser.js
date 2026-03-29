@@ -25,7 +25,6 @@ const Analyser = (() => {
     return (raw.split(',')[0] || raw.split(' ')[0]).trim();
   }
 
-  /* ── Build per-player sorted result arrays ── */
   function playerResults(games) {
     const byPlayer = {};
     const add = (p, res, round) => {
@@ -71,15 +70,12 @@ const Analyser = (() => {
     return winner;
   }
 
-  /* ── Opening header detection ── */
   function openingContains(game, ...terms) {
-    const h = ((game.headers.Opening || '') + ' ' + (game.headers.ECO || '')).toLowerCase();
+    const h = [game.headers.Opening || '', game.headers.ECO || ''].join(' ').toLowerCase();
     return terms.some(t => h.includes(t.toLowerCase()));
   }
 
-  /* ── Late Shake-up: did the leader change after R12? ── */
   function detectLateShakeup(games) {
-    // Build standings after R11 and after R12
     const scores11 = {}, scores12 = {};
     for (const g of games) {
       if (!PGN.isFinished(g)) continue;
@@ -88,7 +84,7 @@ const Analyser = (() => {
       if (round > 12) continue;
       const r = PGN.result(g);
       [scores11, scores12].forEach((obj, idx) => {
-        if (round > 11 + idx) return; // scores11 only goes to R11, scores12 to R12
+        if (round > 11 + idx) return;
         if (!obj[w]) obj[w] = 0;
         if (!obj[b]) obj[b] = 0;
         if (r === '1-0')      { obj[w] += 1; }
@@ -96,15 +92,14 @@ const Analyser = (() => {
         else                  { obj[w] += 0.5; obj[b] += 0.5; }
       });
     }
-    const leader = obj => Object.entries(obj).sort((a,b) => b[1]-a[1])[0]?.[0] || null;
+    const leader = obj => Object.entries(obj).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
     const maxRound = Math.max(0, ...games.map(g => parseInt(g.headers.Round) || 0));
-    if (maxRound < 12) return null; // not enough rounds played yet
+    if (maxRound < 12) return null;
     const l11 = leader(scores11), l12 = leader(scores12);
     if (!l11 || !l12) return null;
     return l11 !== l12;
   }
 
-  /* ── Main ── */
   function analyse(games) {
     const out = {
       hot_hand: null, tilt: null, pacifist: null,
@@ -118,28 +113,17 @@ const Analyser = (() => {
 
     const finished = games.filter(g => PGN.isFinished(g));
     const byPlayer = playerResults(games);
-    const maxRound = Math.max(0, ...games.map(g => parseInt(g.headers.Round) || 0));
 
-    /* ── Streak / count rules ── */
-    out.hot_hand  = bestByStreak(byPlayer, 'win')  || null;
-    out.tilt      = bestByStreak(byPlayer, 'loss') || null;
-    out.pacifist  = mostDraws(byPlayer, ['Giri'])  || null;
-
-    /* ── Late shake-up ── */
+    out.hot_hand     = bestByStreak(byPlayer, 'win')  || null;
+    out.tilt         = bestByStreak(byPlayer, 'loss') || null;
+    out.pacifist     = mostDraws(byPlayer, ['Giri'])  || null;
     out.late_shakeup = detectLateShakeup(games);
 
-    /* ── Per-game / per-move rules ── */
-    let firstEp        = null;
-    let underpro       = false;
-    let kingsHike      = false;
-    let doubleQueen    = false;
-    let checkmate      = false;
-    let blitz          = false;
-    let marathon       = false;
-    let pawnRace       = false;
-    let philidor       = false;
-    let closedSicilian = false;
-    const castlingAt   = {}; // player → latest castle move number
+    let firstEp = null, underpro = false, kingsHike = false;
+    let doubleQueen = false, checkmate = false, blitz = false;
+    let marathon = false, pawnRace = false;
+    let philidor = false, closedSicilian = false;
+    const castlingAt = {};
 
     for (const g of games) {
       const white = norm(g.headers.White);
@@ -149,28 +133,25 @@ const Analyser = (() => {
       const fin   = PGN.isFinished(g);
       const dec   = PGN.isDecisive(g);
 
-      /* Opening header checks */
-      if (openingContains(g, 'philidor'))                          philidor       = true;
-      if (openingContains(g, 'closed sicilian', 'A07', 'A08'))    closedSicilian = true;
+      // ECO codes: Philidor = C41, Closed Sicilian = B23-B26
+      if (openingContains(g, 'philidor', 'C41'))                                          philidor       = true;
+      if (openingContains(g, 'closed sicilian', 'B23', 'B24', 'B25', 'B26'))             closedSicilian = true;
 
-      /* Move count thresholds */
       if (fin && dec && mc < 25) blitz    = true;
       if (fin && dec && mc > 90) marathon = true;
 
-      /* Pawn race: both colours promote in same game */
       let wPro = false, bPro = false;
 
-      /* Move-by-move replay */
       try {
         const events = Chess.replay(g);
         for (const ev of events) {
           if (ev.enPassant && firstEp === null && round !== null) firstEp = round;
-          if (ev.underpromotion)  underpro    = true;
-          if (ev.kingCrossed5th && ev.chessMove <= 40) kingsHike = true;
-          if (ev.doubleQueen)     doubleQueen = true;
-          if (ev.checkmate)       checkmate   = true;
-          if (ev.whitePromotion)  wPro        = true;
-          if (ev.blackPromotion)  bPro        = true;
+          if (ev.underpromotion)                          underpro    = true;
+          if (ev.kingCrossed5th && ev.chessMove <= 40)   kingsHike   = true;
+          if (ev.doubleQueen)                             doubleQueen = true;
+          if (ev.checkmate)                               checkmate   = true;
+          if (ev.whitePromotion)                          wPro        = true;
+          if (ev.blackPromotion)                          bPro        = true;
           if (ev.castled) {
             const p = ev.castled === 'white' ? white : black;
             if (!(p in castlingAt) || ev.chessMove > castlingAt[p])
@@ -184,8 +165,7 @@ const Analyser = (() => {
       if (wPro && bPro) pawnRace = true;
     }
 
-    /* ── Assign booleans: true if seen, false if games played but not seen, null if no games yet ── */
-    const flag = (val) => val ? true : (finished.length > 0 ? false : null);
+    const flag = val => val ? true : (finished.length > 0 ? false : null);
 
     out.en_passant_round  = firstEp;
     out.underpromotion    = flag(underpro);
@@ -195,19 +175,15 @@ const Analyser = (() => {
     out.blitz_decisive    = flag(blitz);
     out.marathon_decisive = flag(marathon);
     out.pawn_race         = flag(pawnRace);
+    out.philidor          = philidor       ? true : null;
+    out.closed_sicilian   = closedSicilian ? true : null;
 
-    /* Opening detections: can only confirm true, never confirm false mid-tournament */
-    out.philidor       = philidor       ? true : null;
-    out.closed_sicilian = closedSicilian ? true : null;
-
-    /* Castling holdout: player with the highest castling move number */
     if (Object.keys(castlingAt).length > 0)
       out.castling_last = Object.entries(castlingAt).sort((a, b) => b[1] - a[1])[0][0];
 
     return out;
   }
 
-  /* ── Standings from results ── */
   function standings(games) {
     const pts = {}, gp = {};
     for (const g of games) {
